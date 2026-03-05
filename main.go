@@ -139,6 +139,13 @@ func (l *Localizer) ConvertFloatToWords(number float64) string {
 	return l.convertNumberStringToWords(s)
 }
 
+// ConvertIntToNumerals converts an integer to a string of Bangla numerals.
+//
+// Example:
+//
+//	localizer := NewLocalizer()
+//	numerals := localizer.ConvertIntToNumerals(12345) // "১২৩৪৫"
+//
 // convertNumberStringToWords converts a string representing a number (integer or float, positive or negative)
 // to its Bangla word representation. Handles leading/trailing spaces, zeros, and invalid input.
 //
