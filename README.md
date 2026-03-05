@@ -1,95 +1,91 @@
-# Author: Nokib Sarkar <nokibsarkar@gmail.com>
-
 # Bangla Localizer Go
 
-Bangla Localizer Go is a Golang module to convert numbers (integer, float, negative, very large) into Bangla (Bengali) words.
+Bangla Localizer Go is a lightweight Go module for converting numbers to:
+
+- **Bangla words** (e.g., `123` → `একশত তেইশ`)
+- **Bangla numerals** (e.g., `123` → `১২৩`)
+
+It supports integers, floats, negatives, and large values.
 
 ## Features
 
-- Convert integers and floating-point numbers to Bangla words
-- Handles negative numbers (with dash prefix)
-- Supports very large numbers with extended Bangla units
-- Ignores leading/trailing spaces and zeros
-- Returns empty string for invalid input
+- Convert `int` and `float64` to **Bangla words**
+- Convert `int` and `float64` to **Bangla numerals** (`০১২৩৪৫৬৭৮৯`)
+- Handles negative values
+- Handles very large numbers with Bangla units (`লক্ষ`, `কোটি`, etc.)
+- String-based internal parsing handles spaces/zeros for word conversion
 
 ## Installation
 
-```sh
+```bash
 go get github.com/nokibsarkar/bangla-localizer-go
 ```
 
-
-## Usage
+## Quick Start
 
 ```go
-import "github.com/nokibsarkar/bangla-localizer-go"
+package main
+
+import (
+	"fmt"
+
+	banglalocalizer "github.com/nokibsarkar/bangla-localizer-go"
+)
 
 func main() {
-	localizer := banglalocalizer.NewLocalizer()
-	fmt.Println(localizer.ConvertIntToWords(123))         // একশত তেইশ
-	fmt.Println(localizer.ConvertFloatToWords(-123.45))   // -একশত তেইশ দশমিক চার পাঁচ
-	fmt.Println(localizer.ConvertIntToWords(1000000000))  // এক হাজার কোটি
-	fmt.Println(localizer.ConvertIntToWords(-1))          // -এক
-	fmt.Println(localizer.ConvertFloatToWords(0.01))      // শুন্য দশমিক এক
+	l := banglalocalizer.NewLocalizer()
+
+	// Bangla words
+	fmt.Println(l.ConvertIntToWords(123))         // একশত তেইশ
+	fmt.Println(l.ConvertFloatToWords(-123.45))   // -একশত তেইশ দশমিক চার পাঁচ
+
+	// Bangla numerals
+	fmt.Println(l.ConvertIntToNumerals(1234567890)) // ১২৩৪৫৬৭৮৯০
+	fmt.Println(l.ConvertFloatToNumerals(10.25))    // ১০.২৫
 }
 ```
 
-### API
+## API
 
-- `NewLocalizer() *Localizer` — Create a new localizer instance
-- `ConvertIntToWords(number int) string` — Convert integer to Bangla words
-- `ConvertFloatToWords(number float64) string` — Convert float to Bangla words
+- `NewLocalizer() *Localizer`
+- `ConvertIntToWords(number int) string`
+- `ConvertFloatToWords(number float64) string`
+- `ConvertIntToNumerals(number int) string`
+- `ConvertFloatToNumerals(number float64) string`
 
+## Examples
 
-### Examples
+### Words
 
-```go
-localizer := banglalocalizer.NewLocalizer()
-fmt.Println(localizer.ConvertIntToWords(123))           // একশত তেইশ
-fmt.Println(localizer.ConvertIntToWords(-123))          // -একশত তেইশ
-fmt.Println(localizer.ConvertIntToWords(1000000000))    // এক হাজার কোটি
-fmt.Println(localizer.ConvertFloatToWords(0.5))         // শুন্য দশমিক পাঁচ
-fmt.Println(localizer.ConvertFloatToWords(-0.5))        // -শুন্য দশমিক পাঁচ
-fmt.Println(localizer.ConvertIntToWords(1000000000000000)) // এক একশত লক্ষ কোটি
-fmt.Println(localizer.convertNumberStringToWords("  123.45  ")) // একশত তেইশ দশমিক চার পাঁচ
-fmt.Println(localizer.convertNumberStringToWords("abc")) // (empty string)
-```
+| Input | Output |
+|---|---|
+| `123` | `একশত তেইশ` |
+| `-123` | `-একশত তেইশ` |
+| `0.5` | `শুন্য দশমিক পাঁচ` |
+| `1000000000` | `এক হাজার কোটি` |
 
-| Input                | Output                                      |
-|----------------------|---------------------------------------------|
-| 123                  | একশত তেইশ                                  |
-| -123                 | -একশত তেইশ                                 |
-| 1000000000           | এক হাজার কোটি                               |
-| 0.5                  | শুন্য দশমিক পাঁচ                             |
-| -0.5                 | -শুন্য দশমিক পাঁচ                           |
-| 1000000000000000     | এক একশত লক্ষ কোটি                           |
-| "  123.45  "         | একশত তেইশ দশমিক চার পাঁচ                   |
-| "abc"                | (empty string)                              |
+### Numerals
 
-## Limits
+| Input | Output |
+|---|---|
+| `0` | `০` |
+| `1234567890` | `১২৩৪৫৬৭৮৯০` |
+| `-987654321` | `-৯৮৭৬৫৪৩২১` |
+| `10.25` | `১০.২৫` |
+| `0.0000001` | `০.০০০০০০১` |
 
-- **Integer range:** Supports up to 1,000,000,000,000,000 (one quadrillion) and negative values of similar magnitude.
-- **Float range:** Fractional part is read digit-by-digit in Bangla, trailing zeros are ignored.
-- **Input type:** Accepts int, float64, or string (via convertNumberStringToWords).
-- **Edge cases:**
-	- Leading/trailing spaces and zeros are ignored.
-	- Negative numbers return dash-prefixed Bangla words.
-	- Invalid or non-numeric input returns an empty string.
-	- For floats, both sides of the decimal are converted as integers.
+## Behavior Notes
+
+- `ConvertFloatToWords` and `ConvertFloatToNumerals` use Go float formatting (`strconv.FormatFloat(..., 'f', -1, 64)`).
+  - Example: `100.00` becomes `100` before conversion.
+- Word conversion trims input and applies number parsing rules internally.
+- Numeral conversion maps only ASCII digits `0-9` to Bangla digits `০-৯`, while preserving other characters.
 
 ## Testing
 
-Run all tests:
-
-```sh
+```bash
 go test ./...
 ```
-
-
-## Documentation
-
-Full GoDoc documentation is available in the source and on [pkg.go.dev](https://pkg.go.dev/github.com/nokibsarkar/bangla-localizer-go).
-
 
 ## License
 
