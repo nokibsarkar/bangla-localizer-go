@@ -14,6 +14,9 @@
 //	localizer := banglalocalizer.NewLocalizer()
 //	word := localizer.ConvertIntToWords(12345678) // "এক কোটি তেইশ লক্ষ পঁয়তাল্লিশ হাজার ছয়শত আটাত্তর"
 //	word := localizer.convertNumberStringToWords("-100.01") // "-একশত দশমিক এক"
+//
+// numerals := localizer.ConvertIntToNumerals(12345) // "১২৩৪৫"
+// numerals := localizer.ConvertFloatToNumerals(123.45) // "১২৩.৪৫"
 package banglalocalizer
 
 import (
