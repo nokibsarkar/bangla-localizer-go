@@ -1,5 +1,3 @@
-// Author: Nokib Sarkar <nokibsarkar@gmail.com>
-
 package banglalocalizer
 
 import (
@@ -57,6 +55,30 @@ func (l *Localizer) ConvertIntToNumerals(number int) string {
 func (l *Localizer) ConvertFloatToNumerals(number float64) string {
 	s := strconv.FormatFloat(number, 'f', -1, 64)
 	return l.convertNumberStringToNumerals(s)
+}
+
+// ConvertStringToNumerals converts English digits in a string to Bangla numerals
+// while keeping all other characters intact.
+//
+// Example:
+//
+//	localizer := NewLocalizer()
+//	result := localizer.ConvertStringToNumerals("My ID: 12345") // "My ID: १२३४५"
+//	result := localizer.ConvertStringToNumerals("Date: 2024-03-06") // "Date: २०२४-०३-०६"
+func (l *Localizer) ConvertStringToNumerals(str string) string {
+	var result strings.Builder
+
+	for _, char := range str {
+		digitStr := string(char)
+		if banglaChar, ok := banglaNumerals[digitStr]; ok {
+			result.WriteString(banglaChar)
+		} else {
+			// Keep all non-digit characters as is
+			result.WriteString(digitStr)
+		}
+	}
+
+	return result.String()
 }
 
 // convertNumberStringToNumerals converts a string representing a number (integer or float)

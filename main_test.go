@@ -1,9 +1,35 @@
-// Author: Nokib Sarkar <nokibsarkar@gmail.com>
 package banglalocalizer
 
 import (
 	"testing"
 )
+
+func TestConvertStringToNumerals(t *testing.T) {
+	localizer := NewLocalizer()
+
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"12345", "১২৩৪৫"},
+		{"My ID: 12345", "My ID: ১২৩৪৫"},
+		{"Date: 2024-03-06", "Date: ২০২৪-০৩-০৬"},
+		{"Phone: 880-1234567", "Phone: ৮৮০-১২৩৪৫৬৭"},
+		{"Price: $99.99", "Price: $৯৯.৯৯"},
+		{"Hello 123 World 456", "Hello ১২৩ World ৪৫৬"},
+		{"0123456789", "০১২৩৪৫৬৭৮৯"},
+		{"Mix: abc123def456!@#", "Mix: abc১২৩def৪৫৬!@#"},
+		{"", ""},
+		{"No digits here", "No digits here"},
+	}
+
+	for _, test := range tests {
+		result := localizer.ConvertStringToNumerals(test.input)
+		if result != test.expected {
+			t.Errorf("ConvertStringToNumerals(%q) = %q, want %q", test.input, result, test.expected)
+		}
+	}
+}
 
 func TestConvertNumberStringToWords(t *testing.T) {
 	tests := []struct {
