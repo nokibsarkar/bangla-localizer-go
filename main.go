@@ -57,6 +57,9 @@ func NewLocalizer() *Localizer {
 // Supports numbers up to 1,000,000,000,000,000 (one quadrillion) and negative values.
 
 func (l *Localizer) ConvertIntToWords(number int) string {
+	if number == 0 {
+		return numericWord["0"]
+	}
 	var result strings.Builder
 	remain := number
 	for _, u := range unitMap {
@@ -172,6 +175,9 @@ func (l *Localizer) convertNumberStringToWords(numberStr string) string {
 	numberStr = trim(numberStr)
 	if numberStr == "" {
 		return ""
+	}
+	if numberStr == "0" {
+		return numericWord["0"]
 	}
 	// Handle float or string with dot
 	if dot := indexOf(numberStr, "."); dot != -1 {
